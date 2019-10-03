@@ -1,5 +1,6 @@
 let bunny
 let quat
+let zero
 
 function setup() {
     createCanvas(800, 800, WEBGL)
@@ -13,9 +14,14 @@ function draw() {
 
     if (quat) {
         const [x, y, z, w] = quat
-        applyMatrix.apply(null, quatToMatrix(w, y, x, z))
+        const mat = quatToMatrix(w, y, x, z)
+        if (!zero) {
+            const inv = math.inv([mat.slice(0, 3), mat.slice(4, 7), mat.slice(8, 11)])
+            zero = [...inv.slice(0, 3), 0, ...inv.slice(3, 6), 0, ...inv.slice(6, 9), 0, ...[0, 0, 0, 1]]
+        }
+        applyMatrix.apply(null, zero)
+        applyMatrix.apply(null, mat)
     }
-    rotateZ(Math.PI)
     model(bunny);
 }
 
